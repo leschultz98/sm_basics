@@ -145,24 +145,44 @@ def is_palindrome(value):
 # Waypoint 15: Convert Roman Numerals to Integer
 def roman_numeral_to_int(roman_numeral):
     """Convert roman numerals to integer."""
-    symbols = {"N": 0, "I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500,
-               "M": 1000}
-    subtraction = {"IV": -2, "IX": -2, "XL": -20, "XC": -20, "CD": -200,
-                   "CM": -200}
-    add = 0
     if not isinstance(roman_numeral, str):
         raise TypeError('Not a string')
-    if roman_numeral:
-        for character in roman_numeral:
-            if character in symbols:
-                add += symbols[character]
-            else:
-                raise ValueError('Not a Roman numeral')
-        subtract = sum([roman_numeral.count(key) *
-                        subtraction[key] for key in subtraction])
-    else:
+    if not roman_numeral:
         raise ValueError('Not a Roman numeral')
-    return add + subtract
+    if roman_numeral == 'N':
+        return 0
+    letter = ['M', 'D', 'C', 'L', 'X', 'V', 'I']
+    value = [1000, 500, 100, 50, 10, 5, 1, 0]
+    number = 0
+    position = 0
+    for x in ['D', 'L', 'V']:
+        if roman_numeral.count(x) > 1:
+            raise ValueError('Not a Roman numeral')
+    for index in range(len(roman_numeral)):
+        if roman_numeral[index]*4 in roman_numeral:
+            raise ValueError('Not a Roman numeral')
+        while position < 7:
+            try:
+                if roman_numeral[index] not in letter[position:]:
+                    raise ValueError('Not a Roman numeral')
+            except ValueError:
+                # Solve the instance of value is 4 or 9
+                if roman_numeral[index - 2] in letter[:position - 1] and \
+                        roman_numeral[index - 1] in ['C', 'X', 'I'] and \
+                        roman_numeral[index] in letter[
+                                                position - 2:position]:
+                    if roman_numeral[index] == letter[position - 2]:
+                        number += value[position] * 8
+                    else:
+                        number += value[position] * 3
+                    position += 1
+                    break
+                raise ValueError('Not a Roman numeral')
+            if roman_numeral[index] == letter[position]:
+                number += value[position]
+                break
+            position += 1
+    return number
 
 
 # Waypoint 16: Play a Melody
